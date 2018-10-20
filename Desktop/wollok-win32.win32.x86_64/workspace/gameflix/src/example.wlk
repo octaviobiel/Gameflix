@@ -1,69 +1,59 @@
-object gameflix{
-	var property listaDeJuegos = []
-	
+object catalogo{
+	var property listaDeJuegos = []	
+	method filtrarJuegos(_categoria){
+		self.listaDeJuegos({juego => juego.categoria() == _categoria})
+	}
+	method buscarJuego(_juego){
+	}
 }
-
 class Usuario{
-	var property libreria = []
 	var property suscripcion
-	var property humor
+	var property humor = 50
 	constructor(_suscripcion){
 		suscripcion = _suscripcion
 	}
-	
 	method jugar(_juego, _tiempo){
-		_juego.tipo().efecto(_tiempo, self)
+		_juego.tipo().efecto(self, _tiempo)
 	}
 	
-	method filtrarJuegos(_categoria){
-		gameflix.listaDeJuegos({})
-	}
 }
-
-
 object premium {
 	var property precio = 50
-	method puedeJugarJuego(_juego){
+	method puedeJugar(_juego){
 		return true
 	}
 	method juegosQuePuedeJugar(){
-		return gameflix.listaDeJuegos()
+		return catalogo.listaDeJuegos()
 	}
 }
-
 object base{
 	var property precio = 25
 	method puedeJugar(_juego){
 		return _juego.precio() < 30
 	}
 	method juegosQuePuedeJugar(){
-		gameflix.listaDeJuegos().filter({juego => self.puedeJugar(juego)})
+		catalogo.listaDeJuegos().filter({juego => self.puedeJugar(juego)})
 	}
-	
 }
-
-
 object prueba{
 	var property precio = 0
 	method puedeJugar(_juego){
 		return _juego.categoria() == "Demo"
 	}
 	method juegosQuePuedeJugar(){
-		gameflix.listaDeJuegos().filter({{juego => self.puedeJugar(juego)}})
+		catalogo.listaDeJuegos().filter({{juego => self.puedeJugar(juego)}})
 	}
 }
-
 object infantil{
 	var property precio = 10
 	method puedeJugar(_juego){
 		return _juego.categoria() == "Infantil"
 	}
 	method juegosQuePuedeJugar(){
-		gameflix.listaDeJuegos().filter({{juego => self.puedeJugar(juego)}})
+		catalogo.listaDeJuegos().filter({{juego => self.puedeJugar(juego)}})
 	}
 }
-
-class Juego{
+ class Juego{
 	var nombre
 	var property precio
 	var property categoria
@@ -75,11 +65,24 @@ class Juego{
 		categoria = _categoria
 		tipo = _tipo
 	}
-	
 }
-
 object violento{
 	method efecto(_usuario, _tiempo){
-		_usuario.humor() - 10 * _tiempo
+		return _usuario.humor(_usuario.humor() - 10 * _tiempo)
+	}
+}
+object terror{
+	method efecto(_usuario, _tiempo){
+		return _usuario.suscripcion(infantil)
+	}
+}
+object moba{
+	method efecto(_usuario, _tiempo){
+		return _usuario.dinero(_usuario.dinero() - 30)
+	}
+}
+object estrategico{
+	method efecto(_usuario, _tiempo){
+		return _usuario.humor(5*_tiempo)
 	}
 }
